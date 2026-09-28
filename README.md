@@ -1,28 +1,32 @@
 # Gray 的博客
 
-个人博客，Markdown 写作，Cloudflare Pages 自动部署。
+Hexo + NexT 主题，Cloudflare Pages 自动部署。
 
 ## 写文章
 
-在 `posts/` 下新建 `YYYY-MM-DD-标题.md`，开头写 front matter：
+```bash
+npx hexo new "文章标题"   # 在 source/_posts/ 生成草稿
+```
+
+或直接在 `source/_posts/` 下新建 `xxx.md`，开头写：
 
 ```markdown
 ---
 title: 文章标题
 date: 2026-09-28
+tags:
+  - 标签1
 ---
-
-正文用 Markdown 写……
 ```
 
 ## 发布
 
 ```bash
-git add posts/ && git commit -m "新文章：标题" && git push
+git add -A && git commit -m "新文章：标题" && git push
 ```
 
-推送到 GitHub 后，Cloudflare Pages 自动构建（`python3 build.py` → `public/`）并上线，无需手动操作。
+推送到 GitHub 后 Action 自动构建（`hexo generate`）并发布到 https://gray-blog.pages.dev。
 
 ## 留言
 
-文章页底部集成了 [Giscus](https://giscus.app)（基于 GitHub Discussions），读者用 GitHub 账号即可留言。
+文章页底部集成了 [Giscus](https://giscus.app)（基于 GitHub Discussions）。
