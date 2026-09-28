@@ -1,0 +1,41 @@
+# Hexo 主配置
+title: Gray 的博客
+subtitle: 记录与分享
+description: Gray 的个人博客，记录想法、折腾笔记和日常分享。
+keywords: 博客, Gray
+author: Gray
+language: zh-CN
+timezone: Asia/Shanghai
+
+url: https://gray-blog.pages.dev
+root: /
+permalink: post/:title/
+permalink_defaults:
+pretty_urls:
+  trailing_index: true
+  trailing_html: true
+
+theme: next
+
+deploy:
+  type: ''
+
+# 归档 / 标签页
+archive_generator:
+  per_page: 20
+  yearly: true
+  monthly: false
+tag_generator:
+  per_page: 20
+
+# RSS
+feed:
+  type: atom
+  path: atom.xml
+  limit: 20
+
+# 本地搜索
+search:
+  path: search.xml
+  field: post
+  content: true
