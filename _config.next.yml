@@ -1,0 +1,60 @@
+# NexT 主题配置（只覆盖需要改的，其余用主题默认）
+darkmode: true
+
+menu:
+  home: / || fa fa-home
+  archives: /archives/ || fa fa-archive
+  tags: /tags/ || fa fa-tags
+  about: /about/ || fa fa-user
+
+rss: /atom.xml
+
+# 代码块
+codeblock:
+  highlight_theme: normal
+  copy_btn: true
+  collapse: false
+
+# 本地搜索
+search:
+  enable: true
+  trigger: auto
+  top_n_per_article: 1
+  unescape: false
+  preload: false
+
+# 阅读体验
+back2top:
+  enable: true
+  scrollpercent: true
+reading_progress:
+  enable: true
+  height: 3px
+  color: '#37c6c0'
+  start_at: left
+bookmark:
+  enable: true
+  color: '#222'
+  save: auto
+
+# 文章元信息
+post_meta:
+  item_text: true
+  created_at: true
+  updated_at: false
+  categories: true
+
+# 页脚
+footer:
+  since: 2026
+  powered: false
+  theme:
+    enable: false
+  beian:
+    enable: false
+
+# 数学公式 / Mermaid 按需再开
+math:
+  enable: false
+mermaid:
+  enable: false
