@@ -55,8 +55,28 @@ footer.site{text-align:center;color:var(--dim);font-size:12px;padding:32px 0 48p
 .back{display:inline-block;margin-bottom:20px;color:var(--dim);font-size:14px;text-decoration:none}
 .back:hover{color:var(--acc)}
 .giscus{margin-top:8px}
+#themeBtn{background:none;border:1px solid var(--line);border-radius:8px;color:var(--dim);cursor:pointer;font-size:14px;padding:2px 10px}
+#themeBtn:hover{color:var(--acc);border-color:var(--acc)}
+[data-theme="dark"]{--bg:#141414;--card:#1e1e1e;--txt:#e6e6e6;--dim:#9a9a9a;--line:#2c2c2c;--acc:#7aa5ff}
+[data-theme="dark"] .post-item .excerpt{color:#b5b5b5}
+[data-theme="dark"] article code{background:#2b2b2b}
+[data-theme="dark"] article blockquote{background:#1a2233;color:#b5b5b5}
 @media(max-width:600px){article{padding:22px 18px}}
 """
+
+THEME_HEAD_SCRIPT = """<script>(function(){try{var t=localStorage.getItem('gb-theme')||(window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>"""
+
+THEME_BODY_SCRIPT = """<script>
+(function(){try{
+var btn=document.getElementById('themeBtn');
+function cur(){return document.documentElement.getAttribute('data-theme')==='dark'?'dark':'light';}
+function paint(){if(btn)btn.textContent=cur()==='dark'?'\\u2600\\uFE0F':'\\uD83C\\uDF19';}
+function giscus(t){var f=document.querySelector('iframe.giscus-frame');if(f){try{f.contentWindow.postMessage({giscus:{setConfig:{theme:t}}},'https://giscus.app');}catch(e){}return true;}return false;}
+paint();
+var n=0,iv=setInterval(function(){if(giscus(cur())||++n>20)clearInterval(iv);},400);
+if(btn)btn.onclick=function(){var t=cur()==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',t);try{localStorage.setItem('gb-theme',t);}catch(e){}paint();giscus(t);};
+}catch(e){}})();
+</script>"""
 
 GISCUS_SCRIPT = """
 <div class="giscus"></div>
@@ -169,17 +189,19 @@ def page(title, body_html, desc=""):
 <title>{html.escape(title)} · {html.escape(BLOG_TITLE)}</title>
 <link rel="alternate" type="application/rss+xml" title="{html.escape(BLOG_TITLE)} RSS" href="/rss.xml">
 <style>{CSS}</style>
+{THEME_HEAD_SCRIPT}
 </head>
 <body>
 <div class="wrap">
 <header class="site">
 <h1><a href="/">{html.escape(BLOG_TITLE)}</a></h1>
 <p>{html.escape(BLOG_TAGLINE)}</p>
-<nav><a href="/">首页</a><a href="/about/">关于</a><a href="/rss.xml">RSS</a></nav>
+<nav><a href="/">首页</a><a href="/about/">关于</a><a href="/rss.xml">RSS</a><button id="themeBtn" aria-label="切换深浅色">🌙</button></nav>
 </header>
 {body_html}
 <footer class="site">© {date.today().year} {html.escape(BLOG_TITLE)}</footer>
 </div>
+{THEME_BODY_SCRIPT}
 </body>
 </html>"""
 
