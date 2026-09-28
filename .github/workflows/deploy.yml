@@ -9,11 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-node@v4
         with:
-          python-version: "3.11"
-      - name: Build static site
-        run: python3 build.py
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm install
+      - name: Build with Hexo
+        run: npx hexo generate
       - name: Ensure Pages project exists
         continue-on-error: true
         run: |
