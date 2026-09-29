@@ -16,13 +16,13 @@ date: 2026-09-27
 
 ## 技术实现
 
-- 前端：单文件 HTML，深色移动端优先的界面
-- 后端：Cloudflare Worker，无服务器
-- 存储：Cloudflare KV，存邀请码列表和投票数据
-- 限流：按 IP 限流，防止被刷
+- 前端：单文件 HTML，米纸底编辑风，中英双语
+- 后端：Cloudflare Worker 提供 API
+- 存储：Supabase 存码表，Cloudflare KV 做限流、留言和最近发放
+- 抽码：加权轮换，被抽得少的码优先
 
 ## 地址
 
-👉 https://muse-invite-board.styrigx.workers.dev/
+👉 https://muse-invite-board.vercel.app/
 
 欢迎来领码，也欢迎贡献邀请码。有建议可以直接联系我。
