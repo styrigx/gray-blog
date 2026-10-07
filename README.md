@@ -2,12 +2,12 @@
 
 [![Deploy](https://github.com/styrigx/styrigx-blog/actions/workflows/deploy.yml/badge.svg)](https://github.com/styrigx/styrigx-blog/actions/workflows/deploy.yml)
 [![Astro](https://img.shields.io/badge/Astro-5.x-FF5D01?logo=astro&logoColor=white)](https://astro.build)
-[![Cloudflare Pages](https://img.shields.io/badge/Cloudflare_Pages-deployed-F68204?logo=cloudflare&logoColor=white)](https://styrigx-blog.pages.dev)
+[![Cloudflare Pages](https://img.shields.io/badge/Cloudflare_Pages-deployed-F68204?logo=cloudflare&logoColor=white)](https://blog.styrigx.com)
 [![License](https://img.shields.io/badge/license-MIT%20%2B%20CC_BY--NC--SA-green)](LICENSE)
 
 Sloan Gray 的个人博客。中英双语，极简纸质风。
 
-**线上：https://styrigx-blog.pages.dev**
+**线上：https://blog.styrigx.com**
 
 ## 特点
 
