@@ -5,11 +5,13 @@ import NavigationCard from '../../components/cards/NavigationCard.astro';
 import ProfileCard from '../../components/cards/ProfileCard.astro';
 import DashboardFlow from '../../components/layout/DashboardFlow.astro';
 import BlogHeatmap from '../../components/widgets/BlogHeatmap.astro';
+import DoingCard from '../../components/widgets/DoingCard.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getSiteConfig } from '../../data/site';
 
 const siteConfig = await getSiteConfig();
 const { site, home, profile } = siteConfig;
+const doingItems = home.doingEn.length > 0 ? home.doingEn : home.doing;
 
 const intro = {
   title: home.intro.en?.title ?? home.intro.title,
@@ -38,6 +40,10 @@ const navItems = [
 
     <Fragment slot="intro">
       <IntroCard intro={intro} quote={quote} greeting="" />
+    </Fragment>
+
+    <Fragment slot="doing">
+      {doingItems.length > 0 && <DoingCard items={doingItems} />}
     </Fragment>
 
     <Fragment slot="latest">
