@@ -1,0 +1,63 @@
+---
+import IntroCard from '../../components/cards/IntroCard.astro';
+import ConnectCard from '../../components/cards/ConnectCard.astro';
+import NavigationCard from '../../components/cards/NavigationCard.astro';
+import ProfileCard from '../../components/cards/ProfileCard.astro';
+import DashboardFlow from '../../components/layout/DashboardFlow.astro';
+import BlogHeatmap from '../../components/widgets/BlogHeatmap.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getSiteConfig } from '../../data/site';
+
+const siteConfig = await getSiteConfig();
+const { site, home, profile } = siteConfig;
+
+const intro = {
+  title: home.intro.en?.title ?? home.intro.title,
+  name: home.intro.en?.name ?? home.intro.name,
+  body: home.intro.en?.body ?? home.intro.body,
+};
+const quote = home.quote.en ?? home.quote;
+const profileEn = {
+  ...profile,
+  role: 'To understand the world, take it apart; to believe in it, put it back together.',
+};
+
+const navItems = [
+  { icon: 'pen', title: 'Posts', subtitle: 'Latest posts', href: '/en/archives' },
+  { icon: 'tags', title: 'Tags', subtitle: 'Browse by topic', href: '/en/tags' },
+  { icon: 'compass', title: 'About', subtitle: 'About me', href: '/en/about' },
+  { icon: 'rss', title: 'RSS', subtitle: 'Subscribe', href: '/en/rss.xml' },
+];
+---
+
+<BaseLayout title={site.pageTitle} description={site.pageDescription} lang="en">
+  <DashboardFlow>
+    <Fragment slot="profile">
+      <ProfileCard profile={profileEn} />
+    </Fragment>
+
+    <Fragment slot="intro">
+      <IntroCard intro={intro} quote={quote} greeting="" />
+    </Fragment>
+
+    <Fragment slot="latest">
+      <BlogHeatmap
+        weeks={home.latest.heatmapWeeks}
+        showLatest={home.latest.showHeatmapLatest}
+        latestCount={home.latest.count}
+        excludeDraft={home.latest.excludeDraft}
+        startDate={home.latest.startDate || null}
+        dateArchiveBaseHref={home.latest.dateArchiveBaseHref || undefined}
+        lang="en"
+      />
+    </Fragment>
+
+    <Fragment slot="navigation">
+      <NavigationCard items={navItems} />
+    </Fragment>
+
+    <Fragment slot="connect">
+      <ConnectCard links={home.links} />
+    </Fragment>
+  </DashboardFlow>
+</BaseLayout>

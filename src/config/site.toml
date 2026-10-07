@@ -1,0 +1,220 @@
+[config.site]
+title = "Styrigx"
+description = "Sloan Gray 的个人博客：AI 应用、开源项目与折腾笔记。"
+pageTitle = "Styrigx | Sloan Gray"
+pageDescription = "拆开世界是为了看懂它，再把它装回去是为了相信它。"
+url = "https://styrigx-blog.pages.dev"
+repository = "https://github.com/styrigx/styrigx-blog"
+footerNote = "Sloan Gray"
+
+[config.theme]
+# 可用色盘：
+# green-soft, green-vivid, rose-soft, pink-soft, purple-soft, blue-soft, orange-soft, brown-soft
+palette = "green-soft"
+# 默认 UI 语言（中文站）。英文页面在代码里按页面语言覆盖。
+lang = "zh-CN"
+
+[config.fonts]
+# 英文与代码感 UI 字体
+en = "Maple Mono"
+code = "Monaco"
+# 模板内可直接选择：ChillRoundM、LXGW WenKai
+# 中文阅读字体
+zh = "LXGW WenKai"
+# 中文完整字体文件
+file = "/fonts/LXGWWenKai-Regular.ttf"
+
+[config.code]
+lightTheme = "catppuccin-latte"
+darkTheme = "catppuccin-macchiato"
+lineNumbers = true
+wrap = true
+preserveIndent = true
+collapseStyle = "collapsible-auto"
+
+[config.math]
+render = "katex" # "katex" | "mathjax"
+
+[config.comments]
+enabled = true
+provider = "giscus"
+show_on_posts = true
+
+[config.search]
+enabled = true
+shortcut = "mod+k"
+placeholder = "搜索…"
+maxResults = 6
+
+[config.pages.blog]
+title = "博客"
+kicker = "Writing"
+subtitle = "拆开看看，再装回去。"
+note = "AI 应用、开源项目和折腾笔记。"
+postsPerPage = 6
+dateFormat = "yyyy-MM-dd"
+metadataSeparator = "icon"
+coverImageStyle = "mask"
+
+[config.comments.giscus]
+repo = "styrigx/styrigx-blog"
+repo_id = "R_kgDOUvdSCg"
+category = "Blog Comments"
+category_id = "DIC_kwDOUvdSCs4DGjtd"
+mapping = "pathname"
+strict = "0"
+reactions_enabled = "1"
+emit_metadata = "0"
+input_position = "bottom"
+light_theme = "light"
+dark_theme = "dark"
+lang = "zh-CN"
+loading = "lazy"
+
+[config.comments.utterances]
+repo = ""
+issue_term = "pathname"
+label = "comment"
+theme = "github-light"
+
+[config.comments.waline]
+server_url = ""
+lang = "zh-CN"
+dark = "html.dark"
+pageview = true
+comment = true
+
+[config.profile]
+name = "Sloan Gray"
+handle = "@styrigx"
+role = "拆开世界是为了看懂它，再把它装回去是为了相信它。"
+email = "styrigx@gmail.com"
+website = "https://styrigx-blog.pages.dev/"
+github = "https://github.com/styrigx"
+avatar = "/images/avatar.png"
+
+[[config.topNav.links]]
+label = "首页"
+href = "/"
+
+[[config.topNav.links]]
+label = "文章"
+href = "/archives"
+
+[[config.topNav.links]]
+label = "关于"
+href = "/about"
+
+[config.topNav.en]
+
+[[config.topNav.en.links]]
+label = "Home"
+href = "/en/"
+
+[[config.topNav.en.links]]
+label = "Posts"
+href = "/en/archives"
+
+[[config.topNav.en.links]]
+label = "About"
+href = "/en/about"
+
+[config.home]
+
+[config.home.quote]
+text = [
+  "拆开世界是为了看懂它，",
+  "再把它装回去是为了相信它。",
+]
+
+[config.home.quote.en]
+text = [
+  "To understand the world, take it apart;",
+  "to believe in it, put it back together.",
+]
+
+[config.home.intro]
+title = "你好，我是 Sloan Gray"
+name = "Sloan Gray"
+body = [
+  "网名 styrigx。这里记录 AI 应用、开源项目和折腾笔记。",
+]
+
+[config.home.intro.en]
+title = "Hi, I'm Sloan Gray"
+name = "Sloan Gray"
+body = [
+  "Known online as styrigx. Notes on AI tools, open-source projects, and tinkering.",
+]
+
+[config.home.latest]
+count = 6
+heatmapWeeks = 24
+showHeatmapLatest = true
+excludeDraft = true
+startDate = ""
+dateArchiveBaseHref = ""
+
+[[config.home.doing]]
+text = "把博客从 Hugo 迁到 Navfolio"
+mark = "01"
+
+[[config.home.doing]]
+text = "给个人门户挑一个顺手的新主题"
+mark = "02"
+
+[[config.home.doing]]
+text = "维护 Muse 玩法手册，已经 501 条"
+mark = "03"
+
+[[config.home.doing]]
+text = "折腾 Muse 邀请码分享站"
+mark = "04"
+
+[[config.home.doing]]
+text = "攒 Galaxy S26 换机和香港号码计划"
+mark = "05"
+
+[[config.home.doingEn]]
+text = "Migrating the blog from Hugo to Navfolio"
+mark = "01"
+
+[[config.home.doingEn]]
+text = "Hunting for a new portal theme that feels right"
+mark = "02"
+
+[[config.home.doingEn]]
+text = "Maintaining the Muse playbook, 501 entries and counting"
+mark = "03"
+
+[[config.home.doingEn]]
+text = "Tinkering with the Muse invite-code board"
+mark = "04"
+
+[[config.home.doingEn]]
+text = "Planning the Galaxy S26 upgrade and a HK number"
+mark = "05"
+
+[[config.home.links]]
+label = "GitHub"
+icon = "github"
+tooltip = "https://github.com/styrigx"
+copy = false
+
+[[config.home.links]]
+label = "X"
+icon = "x"
+tooltip = "https://x.com/styrigx"
+copy = false
+
+[[config.home.links]]
+label = "RSS"
+icon = "rss"
+tooltip = "/rss.xml"
+copy = false
+
+[[config.home.links]]
+label = "Email"
+icon = "mail"
+tooltip = "styrigx@gmail.com"
+copy = true

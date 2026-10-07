@@ -1,0 +1,75 @@
+---
+import IntroCard from '../components/cards/IntroCard.astro';
+import ConnectCard from '../components/cards/ConnectCard.astro';
+import NavigationCard from '../components/cards/NavigationCard.astro';
+import ProfileCard from '../components/cards/ProfileCard.astro';
+import DashboardFlow from '../components/layout/DashboardFlow.astro';
+import BlogHeatmap from '../components/widgets/BlogHeatmap.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getSiteConfig } from '../data/site';
+
+const siteConfig = await getSiteConfig();
+const { site, home, profile } = siteConfig;
+
+const navItems = [
+  { icon: 'pen', title: '文章', subtitle: '最新文章', href: '/archives' },
+  { icon: 'tags', title: '标签', subtitle: '按话题浏览', href: '/tags' },
+  { icon: 'compass', title: '关于', subtitle: '关于我', href: '/about' },
+  { icon: 'rss', title: 'RSS', subtitle: '订阅更新', href: '/rss.xml' },
+];
+---
+
+<BaseLayout title={site.pageTitle} description={site.pageDescription} lang="zh">
+  <script is:inline slot="head-extra">
+    (() => {
+      try {
+        const KEY = 'styrigx-blog-lang';
+        const ua = navigator.userAgent || '';
+        const isBot =
+          /bot|crawl|spider|slurp|mediapartners|baidu|bingpreview|facebookexternalhit|twitterbot|linkedinbot|embedly|quora|pinterest|slackbot|discordbot|telegrambot|whatsapp|applebot|duckduckbot|yandex|sogou|exabot|semrush|ahrefs/i.test(
+            ua,
+          );
+        if (isBot) return;
+        const stored = localStorage.getItem(KEY);
+        if (stored === 'en') {
+          location.replace('/en/');
+          return;
+        }
+        if (stored === 'zh') return;
+        const navLang = (navigator.language || '').toLowerCase();
+        if (navLang === 'en' || navLang.startsWith('en-')) {
+          location.replace('/en/');
+        }
+      } catch {}
+    })();
+  </script>
+  <DashboardFlow>
+    <Fragment slot="profile">
+      <ProfileCard profile={profile} />
+    </Fragment>
+
+    <Fragment slot="intro">
+      <IntroCard intro={home.intro} quote={home.quote} greeting="" />
+    </Fragment>
+
+    <Fragment slot="latest">
+      <BlogHeatmap
+        weeks={home.latest.heatmapWeeks}
+        showLatest={home.latest.showHeatmapLatest}
+        latestCount={home.latest.count}
+        excludeDraft={home.latest.excludeDraft}
+        startDate={home.latest.startDate || null}
+        dateArchiveBaseHref={home.latest.dateArchiveBaseHref || undefined}
+        lang="zh"
+      />
+    </Fragment>
+
+    <Fragment slot="navigation">
+      <NavigationCard items={navItems} />
+    </Fragment>
+
+    <Fragment slot="connect">
+      <ConnectCard links={home.links} />
+    </Fragment>
+  </DashboardFlow>
+</BaseLayout>
