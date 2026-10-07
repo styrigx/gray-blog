@@ -59,8 +59,7 @@ const resolvedSite =
   normalizeSiteUrl(configuredSiteUrl) ||
   'https://example.com';
 
-const resolvedBase =
-  customBase || (isGitHubActions && isProjectPage && repositoryName ? `/${repositoryName}` : '/');
+const resolvedBase = customBase || '/';
 
 // https://astro.build/config
 export default defineConfig({
