@@ -1,4 +1,4 @@
-# Gray 的博客
+# Slaon Gray 的博客
 
 Astro + Navfolio 主题，Cloudflare Pages 自动部署。
 
