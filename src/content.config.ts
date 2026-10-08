@@ -56,8 +56,7 @@ const blogArticleSchema = (context: Parameters<CollectionSchemaFactory>[0]) =>
     sticky: z.union([z.boolean(), z.number().positive()]).optional().default(false),
   });
 
-const contentSource = process.env.NAVFOLIO_CONTENT_SOURCE === 'docs' ? 'docs' : 'content';
-const contentBase = contentSource === 'docs' ? './src/docs' : './src/content';
+const contentBase = './src/content';
 const projectsModuleEnabled = isPageModuleEnabled(navfolioConfig, 'projects');
 const vibeModuleEnabled = isPageModuleEnabled(navfolioConfig, 'vibe');
 const mediaModuleEnabled = isPageModuleEnabled(navfolioConfig, 'media');

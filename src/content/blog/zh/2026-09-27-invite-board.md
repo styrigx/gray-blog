@@ -24,6 +24,6 @@ tags: ["Muse", "AI", "开源"]
 
 ## 地址
 
-👉 https://muse-invite-board.vercel.app/
+👉 https://muse-invite.styrigx.com/
 
 欢迎来领码，也欢迎贡献邀请码。有建议可以直接联系我。

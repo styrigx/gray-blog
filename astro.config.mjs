@@ -44,7 +44,7 @@ const customBase = process.env.SITE_BASE;
 const resolvedSite =
   normalizeSiteUrl(customSite) ||
   normalizeSiteUrl(configuredSiteUrl) ||
-  'https://example.com';
+  'https://blog.styrigx.com';
 
 const resolvedBase = customBase || '/';
 
