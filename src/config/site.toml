@@ -105,6 +105,10 @@ href = "/archives"
 label = "关于"
 href = "/about"
 
+[[config.topNav.links]]
+label = "主站"
+href = "https://styrigx.com"
+
 [config.topNav.en]
 
 [[config.topNav.en.links]]
@@ -118,6 +122,10 @@ href = "/en/archives"
 [[config.topNav.en.links]]
 label = "About"
 href = "/en/about"
+
+[[config.topNav.en.links]]
+label = "Home"
+href = "https://styrigx.com"
 
 [config.home]
 
@@ -160,7 +168,7 @@ text = "把博客从 Hugo 迁到 Navfolio"
 mark = "01"
 
 [[config.home.doing]]
-text = "给个人门户挑一个顺手的新主题"
+text = "个人门户 styrigx.com 上线"
 mark = "02"
 
 [[config.home.doing]]
@@ -180,7 +188,7 @@ text = "Migrating the blog from Hugo to Navfolio"
 mark = "01"
 
 [[config.home.doingEn]]
-text = "Hunting for a new portal theme that feels right"
+text = "Personal portal styrigx.com is live"
 mark = "02"
 
 [[config.home.doingEn]]
