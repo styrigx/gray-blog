@@ -23,3 +23,9 @@ const { site, fonts } = await getSiteConfig();
   site={site}
   fonts={fonts}
 />
+
+<!-- Sliced woff2 fonts via CDN (unicode-range, on-demand loading) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css" />
+<style>
+@font-face{font-family:"Monaco";src:url("/fonts/Monaco.woff2") format("woff2");font-style:normal;font-weight:400;font-display:swap;}
+</style>

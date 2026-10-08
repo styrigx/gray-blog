@@ -8,7 +8,7 @@ interface DoingItem {
   mark: string;
 }
 
-const { items } = Astro.props as { items: DoingItem[] };
+const { items, moreHref, moreLabel } = Astro.props as { items: DoingItem[]; moreHref?: string; moreLabel?: string };
 const ui = getUiText(await getSiteConfig());
 ---
 
@@ -24,6 +24,9 @@ const ui = getUiText(await getSiteConfig());
       ))
     }
   </ul>
+  {moreHref && moreLabel && (
+    <a href={moreHref} class="doing-more">{moreLabel}</a>
+  )}
 </article>
 
 <style>
@@ -88,5 +91,17 @@ const ui = getUiText(await getSiteConfig());
   strong {
     font-size: 0.82rem;
     text-align: right;
+  }
+
+  .doing-more {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: var(--paper-accent);
+    text-decoration: none;
+  }
+
+  .doing-more:hover {
+    text-decoration: underline;
   }
 </style>

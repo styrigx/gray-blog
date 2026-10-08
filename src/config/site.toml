@@ -21,8 +21,8 @@ code = "Monaco"
 # 模板内可直接选择：ChillRoundM、LXGW WenKai
 # 中文阅读字体
 zh = "LXGW WenKai"
-# 中文完整字体文件
-file = "/fonts/LXGWWenKai-Regular.ttf"
+# 中文完整字体文件（已改用 CDN 切片 woff2，此处仅作占位）
+file = "/fonts/LXGWWenKai-Regular-ui-subset.woff2"
 
 [config.code]
 lightTheme = "catppuccin-latte"
@@ -89,7 +89,7 @@ name = "Sloan Gray"
 handle = "@styrigx"
 role = "拆开世界是为了看懂它，再把它装回去是为了相信它。"
 email = "styrigx@gmail.com"
-website = "https://blog.styrigx.com/"
+website = "https://styrigx.com/"
 github = "https://github.com/styrigx"
 avatar = "/images/avatar.png"
 

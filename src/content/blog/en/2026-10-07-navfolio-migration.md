@@ -93,6 +93,6 @@ Used to be manual wrangler uploads, disconnected from GitHub. Now back to the Hu
 
 ---
 
-Whole migration done in a day: plan in the morning, content in the afternoon, homepage and icons in the evening, live by night. https://blog.styrigx.com runs this now.
+Whole migration done in a day: plan in the morning, content in the afternoon, homepage and icons in the evening, live by night. https://styrigx-blog.pages.dev runs this now.
 
 Next: a new theme for the portal. The blog stays put.

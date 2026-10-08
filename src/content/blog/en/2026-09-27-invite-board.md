@@ -24,6 +24,6 @@ Shipped a small project today: a **community Muse invite-code board**.
 
 ## Link
 
-👉 https://muse-invite.styrigx.com/
+👉 https://muse-invite-board.vercel.app/
 
 Come grab a code, or contribute one. Suggestions welcome — just reach out.

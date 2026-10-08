@@ -1,9 +1,12 @@
 # Styrigx Blog
 
-[![Deploy](https://github.com/styrigx/styrigx-blog/actions/workflows/deploy.yml/badge.svg)](https://github.com/styrigx/styrigx-blog/actions/workflows/deploy.yml)
-[![Astro](https://img.shields.io/badge/Astro-5.x-FF5D01?logo=astro&logoColor=white)](https://astro.build)
-[![Cloudflare Pages](https://img.shields.io/badge/Cloudflare_Pages-deployed-F68204?logo=cloudflare&logoColor=white)](https://blog.styrigx.com)
-[![License](https://img.shields.io/badge/license-MIT%20%2B%20CC_BY--NC--SA-green)](LICENSE)
+个人门户：[styrigx.com](https://styrigx.com)
+
+![Astro](https://img.shields.io/badge/Astro-5.x-2563eb?style=flat-square&logo=astro)
+![Navfolio](https://img.shields.io/badge/Navfolio-theme-2563eb?style=flat-square)
+![Deploy](https://img.shields.io/github/actions/workflow/status/styrigx/styrigx-blog/deploy.yml?style=flat-square&label=Deploy&color=2563eb)
+![Site](https://img.shields.io/badge/blog.styrigx.com-online-2563eb?style=flat-square)
+![License](https://img.shields.io/badge/License-MIT-2563eb?style=flat-square)
 
 Sloan Gray 的个人博客。中英双语，极简纸质风。
 
@@ -57,3 +60,22 @@ bun run dev
 
 - 代码：MIT（主题原作者 dodolalorc）
 - 文章：[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh-hans)
+
+## 主题
+
+基于 [Navfolio](https://github.com/navfolio/navfolio) 主题深度定制。
+
+合并上游更新：
+```bash
+git fetch upstream
+git merge upstream/main  # 解决冲突后测试构建
+```
+
+主要定制文件（`src/` 下覆盖主题默认）：
+- `src/components/BaseHead.astro` — 字体切片覆盖、SEO
+- `src/components/Footer.astro` — 页脚定制
+- `src/components/Header.astro` — 导航栏定制
+- `src/components/widgets/DoingCard.astro` — "最近在做"卡片
+- `src/layouts/BaseLayout.astro` — 基础布局
+- `src/styles/global.css` — 全局样式
+- `src/config/site.toml` — 站点配置
