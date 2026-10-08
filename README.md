@@ -67,6 +67,7 @@ bun run dev
 
 合并上游更新：
 ```bash
+git remote add upstream https://github.com/navfolio/navfolio.git
 git fetch upstream
 git merge upstream/main  # 解决冲突后测试构建
 ```

@@ -21,8 +21,8 @@ code = "Monaco"
 # 模板内可直接选择：ChillRoundM、LXGW WenKai
 # 中文阅读字体
 zh = "LXGW WenKai"
-# 中文完整字体文件（已改用 CDN 切片 woff2，此处仅作占位）
-file = "/fonts/LXGWWenKai-Regular-ui-subset.woff2"
+# 中文完整字体文件（主题会自动拼接 -ui-subset.woff2 后缀）
+file = "/fonts/LXGWWenKai-Regular.woff2"
 
 [config.code]
 lightTheme = "catppuccin-latte"
