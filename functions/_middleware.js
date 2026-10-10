@@ -77,17 +77,23 @@ function getPublicKey(pem) {
   return publicKeyPromise;
 }
 
-function getCookie(request, name) {
+/**
+ * 取 Cookie 头里**所有**同名 cookie 的值（旧版本可能留下一个只绑主机的
+ * 同名 sgx-verified，浏览器会把新旧两个都发过来；任一验签通过即有效）。
+ * @returns {string[]}
+ */
+function getCookies(request, name) {
   const header = request.headers.get('cookie');
-  if (!header) return null;
+  if (!header) return [];
+  const out = [];
   for (const part of header.split(';')) {
     const idx = part.indexOf('=');
     if (idx < 0) continue;
     if (part.slice(0, idx).trim() === name) {
-      return decodeURIComponent(part.slice(idx + 1).trim());
+      out.push(decodeURIComponent(part.slice(idx + 1).trim()));
     }
   }
-  return null;
+  return out;
 }
 
 function isWhitelisted(pathname) {
@@ -196,8 +202,8 @@ export async function onRequest(context) {
     return lockRedirect(url);
   }
 
-  const cookie = getCookie(request, 'sgx-verified');
-  if (cookie) {
+  const cookieValues = getCookies(request, 'sgx-verified');
+  for (const cookie of cookieValues) {
     let ok = false;
     try {
       ok = await verifyCookie(cookie, publicKeyPem);
