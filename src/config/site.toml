@@ -188,7 +188,7 @@ text = "Migrating the blog from Hugo to Navfolio"
 mark = "01"
 
 [[config.home.doingEn]]
-text = "Personal portal styrigx.com is live"
+text = "Personal space styrigx.com is live"
 mark = "02"
 
 [[config.home.doingEn]]
