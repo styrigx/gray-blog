@@ -1,98 +1,61 @@
 ---
-title: "Migrating the Blog from Hugo to Navfolio: Full Notes"
-description: "Same URLs so comments carry over, bilingual setup, dashboard homepage, SGX mark design — the whole Hugo+PaperMod to Astro+Navfolio migration."
+title: "Migrating the Blog from Hugo to Navfolio: A Retrospective"
+description: "Same URLs so comments carry over, bilingual setup, dashboard homepage, SGX mark design — a retrospective on moving the blog from Hugo+PaperMod to Astro+Navfolio."
 date: 2026-10-07
 lang: en
-tags: ["blog", "Astro", "tinkering"]
+tags: ["blog", "Astro", "engineering"]
 ---
 
-The blog has a new theme. Moved from Hugo + PaperMod to Astro + Navfolio. Writing down the whole process — why, how, and what broke along the way.
+In October 2026 I moved the blog from Hugo + PaperMod to Astro + Navfolio. One day, start to finish: plan in the morning, content in the afternoon, homepage and icons in the evening, live by night. This is the retrospective: background, constraints, key decisions, and what broke.
 
-## Why switch
+## Background and Goals
 
-PaperMod is great: light, fast, minimal. But after a while it felt like just a blog theme — post list plus post pages, nothing else.
+PaperMod is light, fast, minimal — but it's purely a blog theme: post list plus post pages. Navfolio positions itself as a personal dashboard: avatar, motto, nav cards, writing stats, heatmap on one screen, with the blog as one module. That's closer to what I want: a blog as a foothold on the internet, not just a place for posts.
 
-Navfolio is different. It's a personal dashboard: avatar, motto, nav cards, writing stats, heatmap, all on one screen. The blog is one module of it. That's closer to what I want — a blog isn't just a place for posts, it's a foothold on the internet.
+The goal was crisp: new theme, same content, no lost comments, no broken URLs.
 
-One clarification: **the portal and the blog are two sites, two repos**. The portal comes later; this post is about the blog only.
+## Constraint: Keep the URLs, Keep the Comments
 
-## Migration rule #1: keep the URLs
+The single most important constraint. Old posts lived at `/post/<slug>/`, and Giscus binds comments by `pathname` — as long as the new site serves identical article URLs, old comments carry over automatically. No database migration.
 
-This was the most important constraint. Old posts lived at `/post/<slug>/`, and Giscus binds comments by `pathname` — meaning **as long as the new site serves identical article URLs, old comments carry over automatically**. No database migration needed.
+So step one was confirming the new theme could route articles as `/post/<slug>/` with trailing slashes, then verifying every URL, Chinese and English.
 
-So the first job was making sure the new theme could route articles as `/post/<slug>/` with trailing slashes, then verifying every URL, Chinese and English.
+## Bilingual Setup
 
-## Bilingual setup
+Chinese by default at root `/`, English under `/en/`:
 
-Chinese is default at root `/`; English under `/en/`. Details:
+- First visit auto-redirects by browser language; crawlers excluded (or search indexing breaks)
+- Manual language choice remembered via localStorage
+- Switching languages on a post jumps to its translation; falls back to homepage only when no translation exists
+- Pagefind search with one index per language, no cross-contamination
 
-- **Auto-redirect on first visit** by browser language, crawlers excluded (or search indexing gets messy)
-- **Manual choice remembered** via localStorage
-- **Language switch jumps to the translation** — on a Chinese post, hitting EN goes to that post's English version; falls back to homepage only if no translation exists
-- **Split search indexes** with Pagefind, one per language, so Chinese searches don't surface English results
+## Homepage and Visual Decisions
 
-## Homepage: the version I rejected
+The homepage assembles official components into a dashboard: ProfileCard, IntroCard, NavigationCard, ConnectCard, BlogHeatmap — with copy in both languages.
 
-First attempt was a plain blog homepage — title plus post list. I rejected it myself: too far from the official demo's dashboard look.
+**Fonts**: LXGW WenKai for Chinese, Maple Mono monospace for English and UI. The build subsets WenKai to used characters only. WenKai ships a single Regular weight, so bold Chinese is browser-synthesized — acceptable at these sizes.
 
-The redo used the official components directly: ProfileCard, IntroCard, NavigationCard, ConnectCard, BlogHeatmap, arranged as the dashboard. Two sets of copy, Chinese and English.
+**Avatar**: my own photo, centered square crop.
 
-One bug in between: the title rendered as "Hi, Hi, I'm Sloan Sloan Gray" — greeting duplicated the title. Fixed.
+**Favicon**: an interlocked SGX monogram — initials of Sloan Gray, also the core of Styrigx. Thickened strokes with separated letterforms for small-size legibility, in sage green to match the theme. Note: the theme prefers `favicon.svg`; a wrong version there gets picked up by browser tabs — I deleted the SVG so browsers fall back to PNG.
 
-## Fonts: WenKai + Maple Mono
+**Footer year**: `© 2020–2026`, end year computed at build time. 2020 marks when I first got on the outside internet.
 
-Chinese in **LXGW WenKai**, English and UI in **Maple Mono** monospace. That's the theme's "paper + typewriter" feel — the literary Kai-style Chinese against monospace techiness fits the "take it apart, put it back together" motto.
-
-Technical note: the WenKai TTF is several MB; the build subsets it to used characters only, so loading is fine. WenKai ships a single Regular weight, so bold Chinese is synthesized by the browser — acceptable at these sizes, not worth chasing.
-
-Verdict: once fonts look good and recognizable, stop. Beyond that lies madness.
-
-## Avatar: centered crop
-
-Using my own photo. First crop was face-tracked; I rejected it for a **centered square crop extending from the middle outward**. Person in the center, stable composition.
-
-## Favicon: the SGX monogram
-
-Started with no idea — generated options: a serif S, an ink dot, folded paper. Landed on **SGX**: initials of Sloan Gray, also the core of styrigx. Name and handle in three letters.
-
-A few rounds: serif S was too plain; an interlocked S/G/X geometric mark had style but was unreadable at small sizes; final version thickened the strokes and separated the letters — legibility and design balanced. Sage green to match the theme.
-
-One gotcha: the theme prefers `favicon.svg`, and my placeholder SVG was showing in browser tabs instead of the final interlocked PNG. Deleted the SVG so browsers fall back to PNG.
-
-## Footer year: 2020–2026, automatic
-
-Was `© 2026 Sloan Gray`, now `© 2020–2026`. 2020 is when I first got on the outside internet — worth marking.
-
-The end year is automatic — computed from the build date, rolls forward on every deploy. One caveat: it's build-time, not runtime. A year with zero deploys would show a stale year, but publishing posts triggers builds anyway.
-
-## The "Recently" module
-
-The official demo's about page has a "Recently" section. The theme ships a DoingCard component — just unconfigured and unwired.
-
-I added 5 items in each language, all real: blog migration, portal theme hunt, Muse playbook, invite-code board, S26 upgrade plan. Future updates just edit the doing list in config.
-
-## Deploy: push and forget
-
-Used to be manual wrangler uploads, disconnected from GitHub. Now back to the Hugo-era fully automatic flow:
+## Deployment (Current)
 
 1. Source in `styrigx/styrigx-blog`, main branch
-2. On push, GitHub Actions builds (deps, font subsetting, Pagefind index) and deploys to Cloudflare Pages via wrangler
-3. Write a post or tweak config, push, done
+2. Feature branch → PR → CI (build-and-deploy) green → merge
+3. Cloudflare Pages auto-deploys on merge; live at https://blog.styrigx.com
 
-## Pitfalls worth noting
+Posts and config changes all go through PRs. No direct pushes to main.
 
-1. **`NAVFOLIO_CONTENT_SOURCE=docs` is a landmine.** The theme's workflow sets it, making builds use demo content over yours. Delete it if you deploy via Actions.
+## Lessons
 
-2. **Wrangler env vars.** Direct-deploy scripts must preserve proxy vars and cert vars, or npm stalls and wrangler can't connect.
+1. **Delete `NAVFOLIO_CONTENT_SOURCE=docs`**: the theme's workflow sets it by default, making builds use demo content over yours. Remove it for Actions-based deploys.
+2. **Don't touch Giscus params**: change repo_id or category_id and old comments stop matching. Migrate URL structure; leave comment config alone.
+3. **TOML sub-table ordering**: `[params.xxx]` sub-tables must follow sibling plain keys, or later keys get swallowed into the sub-table.
+4. **Build time vs runtime**: the footer year is computed at build time. A year with zero deploys shows a stale year — knowing this ends the confusion.
 
-3. **TOML sub-table ordering.** `[params.xxx]` sub-tables must come after sibling plain keys, or later keys get swallowed — once cost me the comment section.
+## Closing
 
-4. **Don't touch Giscus params.** repo_id, category_id — change those and old comments stop matching. Migrate URL structure, leave comment config alone.
-
-5. **Build-time vs runtime year.** The footer year is computed at build time. Knowing that ends the confusion about why "automatic" still depends on deploys.
-
----
-
-Whole migration done in a day: plan in the morning, content in the afternoon, homepage and icons in the evening, live by night. https://styrigx-blog.pages.dev runs this now.
-
-Next: a new theme for the portal. The blog stays put.
+The migration itself took a day; the real cost was nailing the constraints up front: URL rules, comment binding, bilingual routing — each had to be fixed before touching anything. Themes can change; content and readers' comments cannot be lost.
