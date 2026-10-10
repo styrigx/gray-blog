@@ -1,8 +1,8 @@
 [config.site]
 title = "Styrigx"
-description = "Sloan Gray 的个人博客：AI 应用、开源项目与折腾笔记。"
+description = "Sloan Gray 的个人博客：AI 工具实战、开源项目复盘与个人基础设施笔记。中英双语。"
 pageTitle = "Styrigx | Sloan Gray"
-pageDescription = "拆开世界是为了看懂它，再把它装回去是为了相信它。"
+pageDescription = "Sloan Gray（Styrigx）的个人博客：AI 应用、开源项目与基础设施笔记，中英双语更新。"
 url = "https://blog.styrigx.com"
 repository = "https://github.com/styrigx/styrigx-blog"
 footerNote = "Sloan Gray"
@@ -50,7 +50,7 @@ maxResults = 6
 title = "博客"
 kicker = "Writing"
 subtitle = "拆开看看，再装回去。"
-note = "AI 应用、开源项目和折腾笔记。"
+note = "AI 工具实战、开源项目复盘、个人基础设施笔记。"
 postsPerPage = 6
 dateFormat = "yyyy-MM-dd"
 metadataSeparator = "icon"
@@ -145,14 +145,14 @@ text = [
 title = "你好，我是 Sloan Gray"
 name = "Sloan Gray"
 body = [
-  "网名 styrigx。这里记录 AI 应用、开源项目和折腾笔记。",
+  "网名 Styrigx。这里写 AI 工具的实战用法、开源项目的完整复盘，以及自己搭的基础设施。不追热点，只记经得起时间的东西。",
 ]
 
 [config.home.intro.en]
 title = "Hi, I'm Sloan Gray"
 name = "Sloan Gray"
 body = [
-  "Known online as styrigx. Notes on AI tools, open-source projects, and tinkering.",
+  "Known online as Styrigx. Field notes on AI tools, full retrospectives on open-source projects, and self-built infrastructure. No hype — only things that hold up over time.",
 ]
 
 [config.home.latest]
@@ -164,43 +164,43 @@ startDate = ""
 dateArchiveBaseHref = ""
 
 [[config.home.doing]]
-text = "把博客从 Hugo 迁到 Navfolio"
+text = "Styrigx Space 2.8.0：会话角色分离与锁屏重设计"
 mark = "01"
 
 [[config.home.doing]]
-text = "个人门户 styrigx.com 上线"
+text = "书库 2.0：R2 存储、无下载阅读、安全加固"
 mark = "02"
 
 [[config.home.doing]]
-text = "维护 Muse 玩法手册，已经 501 条"
+text = "维护 muse-playbook，514 条持续更新"
 mark = "03"
 
 [[config.home.doing]]
-text = "折腾 Muse 邀请码分享站"
+text = "写 AI 代理协作开发规范白皮书"
 mark = "04"
 
 [[config.home.doing]]
-text = "攒 Galaxy S26 换机和香港号码计划"
+text = "博客内容翻新：三篇旧文重写"
 mark = "05"
 
 [[config.home.doingEn]]
-text = "Migrating the blog from Hugo to Navfolio"
+text = "Styrigx Space 2.8.0: session roles and lock-screen redesign"
 mark = "01"
 
 [[config.home.doingEn]]
-text = "Personal space styrigx.com is live"
+text = "Library 2.0: R2 storage, download-free reading, hardening"
 mark = "02"
 
 [[config.home.doingEn]]
-text = "Maintaining the Muse playbook, 501 entries and counting"
+text = "Maintaining muse-playbook, 514 entries and counting"
 mark = "03"
 
 [[config.home.doingEn]]
-text = "Tinkering with the Muse invite-code board"
+text = "Writing the AI agent collaboration whitepaper"
 mark = "04"
 
 [[config.home.doingEn]]
-text = "Planning the Galaxy S26 upgrade and a HK number"
+text = "Blog content refresh: rewriting three older posts"
 mark = "05"
 
 [[config.home.links]]
