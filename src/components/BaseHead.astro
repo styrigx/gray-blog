@@ -24,7 +24,38 @@ const { site, fonts } = await getSiteConfig();
   fonts={fonts}
 />
 
+<!-- 锁屏同步：tab 切回可见 / bfcache 恢复时向服务端确认会话；失效则重载，
+     由 middleware 正常 302 到主站锁屏（带 return）。只认服务端状态，
+     不用 sessionStorage/localStorage/BroadcastChannel。 -->
+<script is:inline>
+  (function () {
+    async function recheckSession() {
+      try {
+        var res = await fetch('/api/session-check', {
+          cache: 'no-store',
+          credentials: 'same-origin',
+        });
+        if (!res.ok) location.reload();
+      } catch (e) {
+        /* 网络错误时不 reload（fail open）：下次导航时 middleware 会再检查 */
+      }
+    }
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') recheckSession();
+    });
+    window.addEventListener('pageshow', function (e) {
+      if (e.persisted) recheckSession();
+    });
+  })();
+</script>
+
 <!-- 自托管字体：public/fonts/LXGWWenKai-Regular.woff2（正文）+ *-ui-subset.woff2（界面），由主题按 site.toml 的 [config.fonts] 生成 @font-face -->
 <style>
-@font-face{font-family:"Monaco";src:url("/fonts/Monaco.woff2") format("woff2");font-style:normal;font-weight:400;font-display:swap;}
+  @font-face {
+    font-family: 'Monaco';
+    src: url('/fonts/Monaco.woff2') format('woff2');
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+  }
 </style>
