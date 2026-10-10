@@ -25,6 +25,10 @@ const EPOCH_URL = MAIN_ORIGIN + '/api/session-epoch';
 const EPOCH_CACHE_TTL_MS = 60 * 1000;
 const EPOCH_FETCH_TIMEOUT_MS = 5000;
 
+/* pages.dev 生产别名 → 正式域名 301（只精确匹配生产别名，分支/哈希预览别名放行） */
+const PAGES_DEV_HOST = 'styrigx-blog.pages.dev';
+const CANONICAL_ORIGIN = 'https://blog.styrigx.com';
+
 /* 白名单：精确路径 */
 const ALLOWLIST_EXACT = new Set([
   '/robots.txt',
@@ -184,6 +188,18 @@ async function verifyCookie(cookieValue, publicKeyPem) {
 export async function onRequest(context) {
   const { request, next, env } = context;
   const url = new URL(request.url);
+
+  /* pages.dev 生产别名 301 到正式域名（链首，不受锁屏逻辑影响） */
+  if (url.hostname === PAGES_DEV_HOST) {
+    const target = CANONICAL_ORIGIN + url.pathname + url.search;
+    return new Response(null, {
+      status: 301,
+      headers: {
+        Location: target,
+        'Cache-Control': 'no-store',
+      },
+    });
+  }
 
   /* 未配置为 blog 站点时直接放行（配置前行为不变） */
   if (!env || env.SGX_SITE !== 'blog') {

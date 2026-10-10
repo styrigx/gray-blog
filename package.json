@@ -27,7 +27,8 @@
     "lint": "eslint .",
     "format": "prettier --write --ignore-unknown .",
     "format:check": "bun run lint && prettier --check --ignore-unknown .",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.3",
