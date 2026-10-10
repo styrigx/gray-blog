@@ -1,10 +1,13 @@
 /**
  * 博客锁屏跳转（2.4.1 三站真实锁屏 · 博客部分）。
  *
- * 与主站（styrigx.com）共用同一套会话 Cookie `sgx-verified`，格式：
- *   epoch.exp.sig
- * 其中 epoch 为 session epoch（整数），exp 为过期时间戳（毫秒），
- * sig 为主站 Ed25519 私钥对 "epoch.exp" 的签名（base64url）。
+ * 与主站（styrigx.com）共用同一套会话 Cookie `sgx-verified`，格式（2.8.0 起）：
+ *   role.epoch.exp.sig
+ * 其中 role 为 owner（密码/通行密钥，12 小时）或 visitor（Turnstile，1 小时），
+ * epoch 为 session epoch（整数），exp 为过期时间戳（毫秒），
+ * sig 为主站 Ed25519 私钥对 "role.epoch.exp" 的签名（base64url）。
+ * 旧三段式（无 role）一律视为无效，不留兼容层。
+ * blog 不区分角色：任一角色验签通过即放行。
  *
  * 本站只持有公钥（环境变量 SGX_ED25519_PUBLIC，PEM 格式），绝不持有私钥，
  * 只做验签，不签发会话。
@@ -12,7 +15,11 @@
  * 逻辑：
  *   - SGX_SITE 不是 'blog'（未配置）：直接放行，保证未配置前站点行为不变。
  *   - 白名单路径（静态资源、robots.txt 等）：直接放行。
- *   - Cookie 有效（验签通过、未过期、epoch >= 主站最新 epoch）：放行。
+ *   - GET /api/session-check：会话复查接口（验签通过 → 200 {ok:true}，
+ *     否则 401 {ok:false}，一律 Cache-Control: no-store），不签发、不跳转。
+ *     供前端在 visibilitychange / pageshow（含 bfcache 恢复）时确认会话。
+ *   - Cookie 有效（验签通过、未过期、epoch >= 主站最新 epoch）：放行，
+ *     受保护的 HTML 响应带 Cache-Control: no-store。
  *   - 其他：一律 302 到主站锁屏 https://styrigx.com/?lock=1&return=<原地址>。
  *     return 的白名单校验由主站做，本站只负责跳转出去。
  *
@@ -29,6 +36,9 @@ const EPOCH_FETCH_TIMEOUT_MS = 5000;
 const PAGES_DEV_HOST = 'styrigx-blog.pages.dev';
 const CANONICAL_ORIGIN = 'https://blog.styrigx.com';
 
+/* 会话检查接口：前端 tab 切回 / bfcache 恢复时确认会话，只复查不签发 */
+const SESSION_CHECK_PATH = '/api/session-check';
+
 /* 白名单：精确路径 */
 const ALLOWLIST_EXACT = new Set([
   '/robots.txt',
@@ -39,9 +49,22 @@ const ALLOWLIST_EXACT = new Set([
 
 /* 白名单：静态资源后缀（不含正文内容） */
 const ALLOWLIST_EXT = new Set([
-  'css', 'js', 'mjs', 'map',
-  'woff', 'woff2', 'ttf', 'otf',
-  'png', 'jpg', 'jpeg', 'gif', 'webp', 'avif', 'svg', 'ico',
+  'css',
+  'js',
+  'mjs',
+  'map',
+  'woff',
+  'woff2',
+  'ttf',
+  'otf',
+  'png',
+  'jpg',
+  'jpeg',
+  'gif',
+  'webp',
+  'avif',
+  'svg',
+  'ico',
 ]);
 
 /* epoch 缓存（内存，TTL 60 秒） */
@@ -143,8 +166,11 @@ async function getLatestEpoch() {
  */
 async function verifyCookie(cookieValue, publicKeyPem) {
   const parts = cookieValue.split('.');
-  if (parts.length !== 3) return false;
-  const [epochStr, expStr, sigB64] = parts;
+  /* 2.8.0 起四段式 role.epoch.exp.sig；旧三段式一律视为无效，不留兼容层 */
+  if (parts.length !== 4) return false;
+  const [role, epochStr, expStr, sigB64] = parts;
+  /* blog 不区分角色：owner / visitor 任一有效即放行 */
+  if (role !== 'owner' && role !== 'visitor') return false;
   const epoch = Number(epochStr);
   const exp = Number(expStr);
   if (!Number.isInteger(epoch) || epoch < 0) return false;
@@ -157,7 +183,7 @@ async function verifyCookie(cookieValue, publicKeyPem) {
     console.error('[blog-lock] public key import failed', e);
     return false;
   }
-  const data = new TextEncoder().encode(epochStr + '.' + expStr);
+  const data = new TextEncoder().encode(role + '.' + epochStr + '.' + expStr);
   let sig;
   try {
     sig = base64UrlToBytes(sigB64);
@@ -184,6 +210,75 @@ async function verifyCookie(cookieValue, publicKeyPem) {
   return epoch >= latest;
 }
 
+/**
+ * 任一 sgx-verified cookie 验签通过即有效。
+ * @param {Request} request
+ * @param {string} publicKeyPem
+ * @returns {Promise<boolean>}
+ */
+async function verifyAnyCookie(request, publicKeyPem) {
+  const cookieValues = getCookies(request, 'sgx-verified');
+  for (const cookie of cookieValues) {
+    let ok = false;
+    try {
+      ok = await verifyCookie(cookie, publicKeyPem);
+    } catch (e) {
+      ok = false;
+    }
+    if (ok) return true;
+  }
+  return false;
+}
+
+/**
+ * 受保护的 HTML 响应加 Cache-Control: no-store（锁屏状态变化时，
+ * 浏览器/bfcache 不得复用旧 HTML；静态资源不受影响）。
+ * @param {Response} res
+ * @returns {Response}
+ */
+function withNoStoreIfHtml(res) {
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('text/html')) return res;
+  const out = new Response(res.body, res);
+  out.headers.set('Cache-Control', 'no-store');
+  return out;
+}
+
+/** @param {any} obj @param {number} status */
+function jsonNoStore(obj, status) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store',
+    },
+  });
+}
+
+/**
+ * GET /api/session-check：前端在 visibilitychange/pageshow 时确认会话。
+ * 只做复查（验签 + 有效期 + epoch），不签发、不跳转。
+ *   - 通过 → 200 {ok:true}
+ *   - 未通过 → 401 {ok:false}
+ *   - 锁屏未配置（SGX_SITE 不是 'blog'）→ 200 {ok:true}（与放行逻辑一致）
+ * 一律带 Cache-Control: no-store。
+ * @param {Request} request
+ * @param {any} env
+ */
+async function handleSessionCheck(request, env) {
+  if (!env || env.SGX_SITE !== 'blog') {
+    return jsonNoStore({ ok: true }, 200);
+  }
+  const publicKeyPem = env.SGX_ED25519_PUBLIC;
+  if (!publicKeyPem) {
+    /* 配置缺失：fail closed */
+    console.error('[blog-lock] SGX_ED25519_PUBLIC not configured');
+    return jsonNoStore({ ok: false }, 401);
+  }
+  const ok = await verifyAnyCookie(request, publicKeyPem);
+  return jsonNoStore({ ok }, ok ? 200 : 401);
+}
+
 /** @param {any} context */
 export async function onRequest(context) {
   const { request, next, env } = context;
@@ -199,6 +294,11 @@ export async function onRequest(context) {
         'Cache-Control': 'no-store',
       },
     });
+  }
+
+  /* 会话检查接口：链首（301 之后），只复查会话，不走锁屏跳转逻辑 */
+  if (url.pathname === SESSION_CHECK_PATH) {
+    return handleSessionCheck(request, env);
   }
 
   /* 未配置为 blog 站点时直接放行（配置前行为不变） */
@@ -218,15 +318,9 @@ export async function onRequest(context) {
     return lockRedirect(url);
   }
 
-  const cookieValues = getCookies(request, 'sgx-verified');
-  for (const cookie of cookieValues) {
-    let ok = false;
-    try {
-      ok = await verifyCookie(cookie, publicKeyPem);
-    } catch (e) {
-      ok = false;
-    }
-    if (ok) return next();
+  if (await verifyAnyCookie(request, publicKeyPem)) {
+    /* 验签通过：放行，受保护的 HTML 响应加 no-store */
+    return withNoStoreIfHtml(await next());
   }
 
   return lockRedirect(url);
@@ -234,7 +328,12 @@ export async function onRequest(context) {
 
 /** @param {URL} url */
 function lockRedirect(url) {
-  const target =
-    MAIN_ORIGIN + '/?lock=1&return=' + encodeURIComponent(url.toString());
-  return Response.redirect(target, 302);
+  const target = MAIN_ORIGIN + '/?lock=1&return=' + encodeURIComponent(url.toString());
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: target,
+      'Cache-Control': 'no-store',
+    },
+  });
 }
