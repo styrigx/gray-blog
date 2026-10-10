@@ -1,10 +1,13 @@
 /**
  * 博客锁屏跳转（2.4.1 三站真实锁屏 · 博客部分）。
  *
- * 与主站（styrigx.com）共用同一套会话 Cookie `sgx-verified`，格式：
- *   epoch.exp.sig
- * 其中 epoch 为 session epoch（整数），exp 为过期时间戳（毫秒），
- * sig 为主站 Ed25519 私钥对 "epoch.exp" 的签名（base64url）。
+ * 与主站（styrigx.com）共用同一套会话 Cookie `sgx-verified`，格式（2.8.0 起）：
+ *   role.epoch.exp.sig
+ * 其中 role 为 owner（密码/通行密钥，12 小时）或 visitor（Turnstile，1 小时），
+ * epoch 为 session epoch（整数），exp 为过期时间戳（毫秒），
+ * sig 为主站 Ed25519 私钥对 "role.epoch.exp" 的签名（base64url）。
+ * 旧三段式（无 role）一律视为无效，不留兼容层。
+ * blog 不区分角色：任一角色验签通过即放行。
  *
  * 本站只持有公钥（环境变量 SGX_ED25519_PUBLIC，PEM 格式），绝不持有私钥，
  * 只做验签，不签发会话。
@@ -163,8 +166,11 @@ async function getLatestEpoch() {
  */
 async function verifyCookie(cookieValue, publicKeyPem) {
   const parts = cookieValue.split('.');
-  if (parts.length !== 3) return false;
-  const [epochStr, expStr, sigB64] = parts;
+  /* 2.8.0 起四段式 role.epoch.exp.sig；旧三段式一律视为无效，不留兼容层 */
+  if (parts.length !== 4) return false;
+  const [role, epochStr, expStr, sigB64] = parts;
+  /* blog 不区分角色：owner / visitor 任一有效即放行 */
+  if (role !== 'owner' && role !== 'visitor') return false;
   const epoch = Number(epochStr);
   const exp = Number(expStr);
   if (!Number.isInteger(epoch) || epoch < 0) return false;
@@ -177,7 +183,7 @@ async function verifyCookie(cookieValue, publicKeyPem) {
     console.error('[blog-lock] public key import failed', e);
     return false;
   }
-  const data = new TextEncoder().encode(epochStr + '.' + expStr);
+  const data = new TextEncoder().encode(role + '.' + epochStr + '.' + expStr);
   let sig;
   try {
     sig = base64UrlToBytes(sigB64);

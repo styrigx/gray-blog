@@ -31,7 +31,14 @@ function b64url(bytes) {
     .replace(/=+$/, '');
 }
 
-async function makeCookie(epoch, exp, key = privateKey) {
+async function makeCookie(role, epoch, exp, key = privateKey) {
+  const payload = `${role}.${epoch}.${exp}`;
+  const sig = await crypto.subtle.sign('Ed25519', key, new TextEncoder().encode(payload));
+  return `${payload}.${b64url(sig)}`;
+}
+
+/** 旧三段式 cookie（2.8.0 前格式），应一律视为无效 */
+async function makeLegacyCookie(epoch, exp, key = privateKey) {
   const payload = `${epoch}.${exp}`;
   const sig = await crypto.subtle.sign('Ed25519', key, new TextEncoder().encode(payload));
   return `${payload}.${b64url(sig)}`;
@@ -87,7 +94,7 @@ after(() => {
 });
 
 test('有效 cookie → 200 {ok:true}，带 no-store', async () => {
-  const cookie = await makeCookie(1, Date.now() + 3600_000);
+  const cookie = await makeCookie('owner', 1, Date.now() + 3600_000);
   const { res, body } = await sessionCheck(
     mockContext('https://blog.styrigx.com/api/session-check', { cookie }),
   );
@@ -107,7 +114,7 @@ test('无 cookie → 401 {ok:false}，带 no-store', async () => {
 });
 
 test('签名被篡改 → 401 {ok:false}', async () => {
-  const good = await makeCookie(1, Date.now() + 3600_000);
+  const good = await makeCookie('owner', 1, Date.now() + 3600_000);
   const parts = good.split('.');
   const sigChars = parts[2].split('');
   /* 翻转签名中间的一个字符（末尾字符低 2 位是填充位，改它可能不改变签名字节） */
@@ -121,7 +128,7 @@ test('签名被篡改 → 401 {ok:false}', async () => {
 });
 
 test('过期 cookie → 401 {ok:false}', async () => {
-  const cookie = await makeCookie(1, Date.now() - 1000);
+  const cookie = await makeCookie('owner', 1, Date.now() - 1000);
   const { res, body } = await sessionCheck(
     mockContext('https://blog.styrigx.com/api/session-check', { cookie }),
   );
@@ -130,12 +137,42 @@ test('过期 cookie → 401 {ok:false}', async () => {
 });
 
 test('epoch 过旧（< 主站最新 epoch）→ 401 {ok:false}', async () => {
-  const cookie = await makeCookie(0, Date.now() + 3600_000);
+  const cookie = await makeCookie('owner', 0, Date.now() + 3600_000);
   const { res, body } = await sessionCheck(
     mockContext('https://blog.styrigx.com/api/session-check', { cookie }),
   );
   assert.equal(res.status, 401);
   assert.deepEqual(body, { ok: false });
+});
+
+test('visitor 角色 → 200 {ok:true}（blog 不区分角色）', async () => {
+  const cookie = await makeCookie('visitor', 1, Date.now() + 3600_000);
+  const { res, body } = await sessionCheck(
+    mockContext('https://blog.styrigx.com/api/session-check', { cookie }),
+  );
+  assert.equal(res.status, 200);
+  assert.deepEqual(body, { ok: true });
+});
+
+test('非法 role → 401 {ok:false}', async () => {
+  const cookie = await makeCookie('admin', 1, Date.now() + 3600_000);
+  const { res, body } = await sessionCheck(
+    mockContext('https://blog.styrigx.com/api/session-check', { cookie }),
+  );
+  assert.equal(res.status, 401);
+  assert.deepEqual(body, { ok: false });
+});
+
+test('旧三段式 cookie（无 role）→ 401 {ok:false}，不留兼容层', async () => {
+  const cookie = await makeLegacyCookie(1, Date.now() + 3600_000);
+  const { res, body } = await sessionCheck(
+    mockContext('https://blog.styrigx.com/api/session-check', { cookie }),
+  );
+  assert.equal(res.status, 401);
+  assert.deepEqual(body, { ok: false });
+  /* 页面请求同样 302 到锁屏 */
+  const page = await onRequest(mockContext('https://blog.styrigx.com/post/abc/', { cookie }));
+  assert.equal(page.status, 302);
 });
 
 test('锁屏未配置（SGX_SITE 不是 blog）→ 200 {ok:true}，与放行逻辑一致', async () => {
@@ -164,7 +201,7 @@ test('pages.dev 生产别名上 /api/session-check 仍先 301 到正式域名', 
 });
 
 test('受保护的 HTML 响应带 Cache-Control: no-store', async () => {
-  const cookie = await makeCookie(1, Date.now() + 3600_000);
+  const cookie = await makeCookie('owner', 1, Date.now() + 3600_000);
   const res = await onRequest(
     mockContext('https://blog.styrigx.com/post/abc/', {
       cookie,
@@ -179,7 +216,7 @@ test('受保护的 HTML 响应带 Cache-Control: no-store', async () => {
 });
 
 test('受保护的非 HTML 响应不加 no-store', async () => {
-  const cookie = await makeCookie(1, Date.now() + 3600_000);
+  const cookie = await makeCookie('owner', 1, Date.now() + 3600_000);
   const res = await onRequest(
     mockContext('https://blog.styrigx.com/rss.xml', {
       cookie,
